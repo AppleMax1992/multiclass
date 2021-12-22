@@ -1,13 +1,12 @@
 # coding:utf-8
 from numpy.lib.arraysetops import unique
 from pandas.core.indexes.base import Index
-import pymongo
 import pandas as pd
 import re
 import collections
 from sklearn import metrics
 test = pd.read_csv('./test_samples.csv')
-prediction = pd.read_csv('./submission_test.csv')
+prediction = pd.read_csv('./submission_base_rf.csv')
 import matplotlib
 #matplotlib.use("Agg")
 import numpy as np
@@ -38,26 +37,38 @@ res = prediction
 # 1、从0-1之间按照等间隔设置，比如0，0.1，0.2，…，0.9，1.0。这样能得到10组 “p” “r” 值。当然也可以把间隔设置的小一点，可以得到更多组 “p” “r” 值。
 # 2、把所有样本的概率预测值从小到大排序去重，并以此数列分别为阈值，进行计算 “p" “r” 值，可以得到更多组 “p” “r” 值。
 
-res = res.applymap(lambda x: [0, 1][x>0.6])
-# 0.4之后准确率反而会下降
+
+
+# 结果
+
+# 1.logistic 0.5318860244233379 hamming_loss  0.06221166892808684  n!=0.5之后准确率会下降
+# n = 0.5
+# 2. randomforest 0.5101763907734057  0.07170963364993216 0.5之后会下降
+# n = 0.5 
+# 3. gbc 0.45658073270013566  0.07394843962008141 0.5之后会下降
+n =0.5
+res = res.applymap(lambda x: [0, 1][x>n])
 # # 预测值
-res.to_csv('merge_bert_logis.csv',index=None,encoding='utf_8_sig') 
+res.to_csv('merge_rf.csv',index=None,encoding='utf_8_sig') 
 test =  test[['中文名','外文名','别名','拼音','国籍','本名','作者','类型','书名','作品名称']]
 label = ['name','foregin name','nickname','western script','country','original name','author','category','book name','title']
-pred = res.to_numpy()
-target = test.to_numpy()
-print(target)
+y_pred = res.to_numpy()
+y_true = test.to_numpy()
+print(y_true)
 print("=================================")
-print(pred)
-print(metrics.accuracy_score(pred,target))
-print(metrics.hamming_loss(pred, target))
+print(y_pred)
+print(metrics.precision_score(y_true, y_pred, average="macro"))
+print(metrics.recall_score(y_pred, y_true,average="macro"))
+print(metrics.f1_score(y_pred, y_true,average="macro"))
+print(metrics.accuracy_score(y_pred,y_true))
+print(metrics.hamming_loss(y_pred, y_true))
 
 # precision recall curve
 precision = dict()
 recall = dict()
 for i in range(10):
-    precision[i], recall[i], _ = precision_recall_curve(target[:, i],
-                                                        pred[:, i])
+    precision[i], recall[i], _ = precision_recall_curve(y_true[:, i],
+                                                        y_pred[:, i])
     plt.plot(recall[i], precision[i], lw=2, label='{}'.format(label[i]))
     
 plt.xlabel("recall")

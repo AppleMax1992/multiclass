@@ -37,11 +37,13 @@ anyls(res)
 # print(dic)
 # print(key)
 # print(value)
+# 存储属性的统计信息
 csvpd =  pd.DataFrame({'name':key,'value':value})
 csvres = csvpd.sort_values(by=['value'],axis = 0,ascending = False)
 
-csvres.to_csv('res.csv',index=None,encoding='utf_8_sig')
+csvres.to_csv('res_20w.csv',index=None,encoding='utf_8_sig')
 
+# 统计结果，选前十
 props = csvres['name'][0:10]
 # print(props)
 prepare_list = {}
@@ -53,6 +55,7 @@ for i in props:
 name = []
 text = []
 cid = []
+# 标注
 for index,item in enumerate(text_data):
     # if(index < 1):
     if (item['attr'] and len(item['attr'])>0):
@@ -88,8 +91,11 @@ for index,item in enumerate(text_data):
 # print(len(text))
 # print(text)
 print('开始导出')
-csvpd =  pd.DataFrame({'id':cid,'name':name,'text':text,'中文名':prepare_list['中文名'],'外文名':prepare_list['外文名'],'别名':prepare_list['别名'],'拼音':prepare_list['拼音'],'国籍':prepare_list['国籍'],'本名':prepare_list['本名'],'作者':prepare_list['作者'],'类型':prepare_list['类型'],'书名':prepare_list['书名'],'作品名称':prepare_list['作品名称']})
-csvpd.to_csv('./resFin.csv',index=None,encoding='utf_8_sig')
+prepare_list['id'] = cid
+prepare_list['name'] = name
+prepare_list['text'] = text
+csvpd =  pd.DataFrame([prepare_list])
+csvpd.to_csv('./resFin_20w.csv',index=None,encoding='utf_8_sig')
 # res_list.append({'entity':item['name'],'text':its['text'],item['attr']:item['value']})
 # res = pd.DataFrame.from_dict(res_list,orient='index', columns=['entity', 'text'])
 print('完成导出')
