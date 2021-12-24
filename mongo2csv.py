@@ -41,7 +41,7 @@ anyls(res)
 csvpd =  pd.DataFrame({'name':key,'value':value})
 csvres = csvpd.sort_values(by=['value'],axis = 0,ascending = False)
 
-csvres.to_csv('res_20w.csv',index=None,encoding='utf_8_sig')
+# csvres.to_csv('res_20w.csv',index=None,encoding='utf_8_sig')
 
 # 统计结果，选前十
 props = csvres['name'][0:10]
@@ -51,7 +51,7 @@ for i in props:
     prepare_list[i] = []
 # print(prepare_list)
     # propsarr.append(i=[])
-# print(propsarr)
+print(props)
 name = []
 text = []
 cid = []
@@ -66,7 +66,7 @@ for index,item in enumerate(text_data):
         text.append(re.sub('\s+'," ",item['text']))
         # text.append(item['text'])
         # print(len(item['attr'])>0)
-        for prop in prepare_list :
+        for prop in props :
             flag = 0
             for i in item['attr']:
                 if(i['attr'] == prop):
@@ -94,7 +94,7 @@ print('开始导出')
 prepare_list['id'] = cid
 prepare_list['name'] = name
 prepare_list['text'] = text
-csvpd =  pd.DataFrame([prepare_list])
+csvpd =  pd.DataFrame(prepare_list)
 csvpd.to_csv('./resFin_20w.csv',index=None,encoding='utf_8_sig')
 # res_list.append({'entity':item['name'],'text':its['text'],item['attr']:item['value']})
 # res = pd.DataFrame.from_dict(res_list,orient='index', columns=['entity', 'text'])
